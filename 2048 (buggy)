@@ -1,0 +1,291 @@
+#include <iostream>
+#include <ctime>
+#include <cstdlib>
+//this is buggy and I'm too lazy to fix it you can if you want
+using namespace std;
+int board[4][4];
+bool win()
+{
+    for(int i=0;i<4;i++)
+    {
+        for(int z=0;z<4;z++)
+        {
+            if(board[i][z]==2048)
+            {
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+void move_board_down()
+{
+            for(int x=0;x<16;x++)
+            {
+                if(board[x%4][x/4]!=0 && (x/4)<3 && board[x%4][x/4]==board[x%4][(x/4)+1])
+                {
+                    board[x%4][(x/4)+1]=0;
+                    board[x%4][x/4]*=2;
+                }
+            }
+            for(int i=0;i<16;i++)
+            {
+                if(board[i%4][i/4]!=0 && (i/4)<2 && board[i%4][(i/4)+1]==0 && board[i%4][i/4]==board[i%4][(i/4)+2])
+                {
+                    board[i%4][(i/4)+2]=0;
+                    board[i%4][i/4]*=2;
+                }
+            }
+            for(int z=0;z<16;z++)
+            {
+                if(board[z%4][z/4]!=0 && (z/4)==0 && board[z%4][(z/4)+1]==0 && board[z%4][(z/4)+2]==0 && board[z%4][z/4]==board[z%4][(z/4)+3])
+                {
+                    board[z%4][(z/4)+3]=0;
+                    board[z%4][z/4]*=2;
+                }
+            }
+            for(int y=0;y<48;y++)
+            {
+                if(board[y%4][(y%16)/4]==0 && ((y%16)/4)<3 && board[y%4][((y%16)/4)+1]!=0)
+                {
+                    board[y%4][(y%16)/4]=board[y%4][((y%16)/4)+1];
+                    board[y%4][((y%16)/4)+1]=0;
+                }
+            }
+            /*original:*if(board[0][0]!=0 && board[0][0]==board[0][1])
+            {
+                board[0][1]=0;
+                board[0][0]*=2;
+            }
+            if(board[0][1]!=0 && board[0][1]==board[0][2])
+            {
+                board[0][2]=0;
+                board[0][1]*=2 etc.
+            }*/
+
+}
+void move_board_up()
+{
+            for(int x=0;x<16;x++)
+            {
+                if(board[x%4][x/4]!=0 && (x/4)>0 && board[x%4][x/4]==board[x%4][(x/4)-1])
+                {
+                    board[x%4][(x/4)-1]=0;
+                    board[x%4][x/4]*=2;
+                }
+            }
+            for(int i=0;i<16;i++)
+            {
+                if(board[i%4][i/4]!=0 && (i/4)>1 && board[i%4][(i/4)-1]==0 && board[i%4][i/4]==board[i%4][(i/4)-2])
+                {
+                    board[i%4][(i/4)-2]=0;
+                    board[i%4][i/4]*=2;
+                }
+            }
+            for(int z=0;z<16;z++)
+            {
+                if(board[z%4][z/4]!=0 && (z/4)==3 && board[z%4][(z/4)-1]==0 && board[z%4][(z/4)-2]==0 && board[z%4][z/4]==board[z%4][(z/4)-3])
+                {
+                    board[z%4][(z/4)-3]=0;
+                    board[z%4][z/4]*=2;
+                }
+            }
+            for(int y=0;y<48;y++)
+            {
+                if(board[y%4][(y%16)/4]==0 && ((y%16)/4)>0 && board[y%4][((y%16)/4)-1]!=0)
+                {
+                    board[y%4][(y%16)/4]=board[y%4][((y%16)/4)-1];
+                    board[y%4][((y%16)/4)-1]=0;
+                }
+            }
+}
+void move_board_right()
+{
+                for(int x=0;x<16;x++)
+            {
+                if(board[x%4][x/4]!=0 && (x%4)>0 && board[x%4][x/4]==board[(x%4)-1][x/4])
+                {
+                    board[(x%4)-1][x/4]=0;
+                    board[x%4][x/4]*=2;
+                }
+            }
+            for(int i=0;i<16;i++)
+            {
+                if(board[i%4][i/4]!=0 && (i%4)>1 && board[(i%4)-1][i/4]==0 && board[i%4][i/4]==board[(i%4)-1][i/4])
+                {
+                    board[(i%4)-2][i/4]=0;
+                    board[i%4][i/4]*=2;
+                }
+            }
+            for(int z=0;z<16;z++)
+            {
+                if(board[z%4][z/4]!=0 && (z%4)==3 && board[(z%4)-1][z/4]==0 && board[(z%4)-2][z/4]==0 && board[z%4][z/4]==board[(z%4)-3][z/4])
+                {
+                    board[(z%4)-3][z/4]=0;
+                    board[z%4][z/4]*=2;
+                }
+            }
+            for(int y=0;y<48;y++)
+            {
+                if(board[y%4][(y%16)/4]==0 && (y%4)>0 && board[(y%4)-1][(y%16)/4]!=0)
+                {
+                    board[y%4][(y%16)/4]=board[(y%4)-1][(y%16)/4];
+                    board[(y%4)-1][(y%16)/4]=0;
+                }
+            }
+}
+void move_board_left()
+{
+                for(int x=0;x<16;x++)
+            {
+                if(board[x%4][x/4]!=0 && (x%4)<3 && board[x%4][x/4]==board[(x%4)+1][x/4])
+                {
+                    board[(x%4)+1][x/4]=0;
+                    board[x%4][x/4]*=2;
+                }
+            }
+            for(int i=0;i<16;i++)
+            {
+                if(board[i%4][i/4]!=0 && (i%4)<2 && board[(i%4)+1][i/4]==0 && board[i%4][i/4]==board[(i%4)+1][i/4])
+                {
+                    board[(i%4)+2][i/4]=0;
+                    board[i%4][i/4]*=2;
+                }
+            }
+            for(int z=0;z<16;z++)
+            {
+                if(board[z%4][z/4]!=0 && (z%4)==0 && board[(z%4)+1][z/4]==0 && board[(z%4)+2][z/4]==0 && board[z%4][z/4]==board[(z%4)+3][z/4])
+                {
+                    board[(z%4)+3][z/4]=0;
+                    board[z%4][z/4]*=2;
+                }
+            }
+            for(int y=0;y<48;y++)
+            {
+                if(board[y%4][(y%16)/4]==3 && (y%4)<3 && board[(y%4)+1][(y%16)/4]!=0)
+                {
+                    board[y%4][(y%16)/4]=board[(y%4)+1][(y%16)/4];
+                    board[(y%4)+1][(y%16)/4]=0;
+                }
+            }
+}
+bool lost()
+{
+    int lose=0;
+    for(int i=0;i<4;i++)
+    {
+        for(int z=0;z<4;z++)
+        {
+            if(board[i][z]!=0)
+            {
+                if(i<3 && z<3 && board[i][z]!=board[i][z+1] && board[i][z]!=board[i+1][z])
+                {
+                    lose++;
+                }
+                if(i==3 && z<3 && board[i][z]!=board[i][z+1])
+                {
+                    lose++;
+                }
+                if(z==3 && i<3 && board[i][z]!=board[i+1][z])
+                {
+                    lose++;
+                }
+            }
+        }
+    }
+    if(lose==16)
+    {
+        return 1;
+    }
+    return 0;
+}
+void newtile()
+{
+    int coordinate_x;
+    int coordinate_y;
+    while(1)
+    {
+        coordinate_x=rand()%4;
+        coordinate_y=(rand()%16)/4;
+        if(board[coordinate_x][coordinate_y]==0)
+        {
+            if((rand()%5)!=0)
+            {
+                board[coordinate_x][coordinate_y]=2;
+            }
+            else
+            {
+                board[coordinate_x][coordinate_y]=4;
+            }
+            break;
+        }
+    }
+}
+void newboard()
+{
+    for(int i=0;i<4;i++)
+    {
+        for(int z=0;z<4;z++)
+        {
+            board[i][z]=0;
+        }
+    }
+}
+void display_board()
+{
+    for(int i=0;i<4;i++)
+    {
+        for(int z=0;z<4;z++)
+        {
+            cout << board[z][i] << '\t';
+        }
+        cout << "\n" << endl;
+    }
+}
+int main()
+{
+    char direction;
+    newboard();
+    srand(time(NULL));
+    cout << "2048 (buggy version) by Kevin Liu\n";
+    cout << "Created on April 22, 2014\n" << endl;
+    cout << "The layout of the 2048 board is shown below.\n";
+    cout << "Use WASD to move.\n" << endl;
+    while(1)
+    {
+        newtile();
+        if(lost())
+        {
+            break;
+        }
+        display_board();
+        cout << "Move:\n";
+        cin >> direction;
+        cout << "\n";
+        switch(direction)
+        {
+        case 'w':
+            move_board_up();
+        case 's':
+            move_board_down();
+        case 'd':
+            move_board_right();
+        case 'a':
+            move_board_left();
+        }
+        if(win())
+        {
+            break;
+        }
+    }
+    if(lost())
+    {
+        cout << "You lose.";
+        return 0;
+    }
+    else
+    {
+        cout << "You win.";
+        return 0;
+    }
+}
