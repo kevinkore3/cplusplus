@@ -2,8 +2,8 @@
 #include <sstream>
 #include <ctime>
 #include <cstdlib>
+//use arrow keys for finer RGB adjustments
 using namespace std;
-//sketchpad rough draft
 int main(int argc,char *argv[])
 {
     srand(time(NULL));
@@ -21,6 +21,8 @@ int main(int argc,char *argv[])
     int g;
     int b;
     int point;
+    bool right_down=0;
+    bool left_down=0;
     bool fill_r=0;
     bool fill_g=0;
     bool fill_b=0;
@@ -31,6 +33,7 @@ int main(int argc,char *argv[])
     bool r_minus_down=0;
     bool g_minus_down=0;
     bool b_minus_down=0;
+    bool clear_down=0;
     SDL_Color black{0,0,0};
     SDL_Color red{255,0,0};
     SDL_Color blue{0,0,255};
@@ -60,6 +63,8 @@ int main(int argc,char *argv[])
     SDL_Surface *s_plus=TTF_RenderText_Solid(font,"+",black);
     SDL_Surface *s_minus=TTF_RenderText_Solid(font,"-",black);
     SDL_Surface *s_random=TTF_RenderText_Solid(font,"Random Color",black);
+    SDL_Surface *s_clear=TTF_RenderText_Solid(font,"Clear",black);
+    SDL_Surface *s_version=TTF_RenderText_Solid(font,"SDL Sketchpad v0.1.1 Alpha by Kevin Liu",black);
     SDL_Surface *s_color_text;
     SDL_Texture *t_color_text;
     SDL_Texture *t_r=SDL_CreateTextureFromSurface(renderer,s_r);
@@ -68,6 +73,8 @@ int main(int argc,char *argv[])
     SDL_Texture *t_random=SDL_CreateTextureFromSurface(renderer,s_random);
     SDL_Texture *t_plus=SDL_CreateTextureFromSurface(renderer,s_plus);
     SDL_Texture *t_minus=SDL_CreateTextureFromSurface(renderer,s_minus);
+    SDL_Texture *t_clear=SDL_CreateTextureFromSurface(renderer,s_clear);
+    SDL_Texture *t_version=SDL_CreateTextureFromSurface(renderer,s_version);
     SDL_Rect rect_menu{0,0,800,100};
     SDL_Rect rect_r{740,10,50,20};
     SDL_Rect rect_g{740,38,50,20};
@@ -91,12 +98,21 @@ int main(int argc,char *argv[])
     SDL_Rect rect_r_minus{705,13,10,15};
     SDL_Rect rect_g_minus{705,41,10,15};
     SDL_Rect rect_b_minus{705,69,10,15};
+    SDL_Rect rect_clear{550,35,50,20};
+    SDL_Rect rect_version{5,5,200,16};
     SDL_SetRenderDrawColor(renderer,b_r,b_g,b_b,255);
     SDL_RenderClear(renderer);
     while(!quit)
     {
         SDL_SetRenderDrawColor(renderer,150,150,150,255);
         SDL_RenderFillRect(renderer,&rect_menu);
+        SDL_RenderCopy(renderer,t_version,NULL,&rect_version);
+        if(clear_down)
+        {
+            SDL_SetRenderDrawColor(renderer,180,180,180,255);
+            SDL_RenderFillRect(renderer,&rect_clear);
+        }
+        SDL_RenderCopy(renderer,t_clear,NULL,&rect_clear);
         SDL_SetRenderDrawColor(renderer,240,240,240,255);
         SDL_RenderFillRect(renderer,&rect_r);
         SDL_RenderFillRect(renderer,&rect_g);
@@ -111,7 +127,49 @@ int main(int argc,char *argv[])
         t_color_text=SDL_CreateTextureFromSurface(renderer,s_color_text);
         while(SDL_PollEvent(&input)!=0)
         {
-            if(input.type==SDL_QUIT)
+            if(input.type==SDL_KEYDOWN)
+            {
+                if(input.key.keysym.sym==SDLK_RIGHT && !right_down)
+                {
+                    if(fill_r && r!=255)
+                    {
+                        pen_color.r++;
+                    }
+                    else if(fill_g && g!=255)
+                    {
+                        pen_color.g++;
+                    }
+                    else if(fill_b && b!=255)
+                    {
+                        pen_color.b++;
+                    }
+                    right_down=1;
+                    left_down=0;
+                }
+                else if(input.key.keysym.sym==SDLK_LEFT && !left_down)
+                {
+                    if(fill_r && r!=0)
+                    {
+                        pen_color.r--;
+                    }
+                    else if(fill_g && g!=0)
+                    {
+                        pen_color.g--;
+                    }
+                    else if(fill_b && b!=0)
+                    {
+                        pen_color.b--;
+                    }
+                    left_down=1;
+                    right_down=0;
+                }
+            }
+            else if(input.type==SDL_KEYUP)
+            {
+                right_down=0;
+                left_down=0;
+            }
+            else if(input.type==SDL_QUIT)
             {
                 quit=1;
             }
@@ -178,19 +236,78 @@ int main(int argc,char *argv[])
                 else if(x>690 && x<700 && y>13 && y<28)
                 {
                     r_plus_down=1;
+                    g_plus_down=0;
+                    b_plus_down=0;
+                    r_minus_down=0;
+                    g_minus_down=0;
+                    b_minus_down=0;
                 }
                 else if(x>690 && x<703 && y>41 && y<66)
                 {
                     g_plus_down=1;
+                    r_plus_down=0;
+                    b_plus_down=0;
+                    r_minus_down=0;
+                    g_minus_down=0;
+                    b_minus_down=0;
                 }
                 else if(x>690 && x<703 && y>69 && y<84)
                 {
                     b_plus_down=1;
+                    r_plus_down=0;
+                    g_plus_down=0;
+                    r_minus_down=0;
+                    g_minus_down=0;
+                    b_minus_down=0;
+                }
+                else if(x>705 && x<715 && y>13 && y<28)
+                {
+                    r_minus_down=1;
+                    r_plus_down=0;
+                    g_plus_down=0;
+                    b_plus_down=0;
+                    g_minus_down=0;
+                    b_minus_down=0;
+                }
+                else if(x>705 && x<715 && y>41 && y<66)
+                {
+                    g_minus_down=1;
+                    r_plus_down=0;
+                    g_plus_down=0;
+                    b_plus_down=0;
+                    r_minus_down=0;
+                    b_minus_down=0;
+                }
+                else if(x>705 && x<715 && y>69 && y<84)
+                {
+                    b_minus_down=1;
+                    r_plus_down=0;
+                    g_plus_down=0;
+                    b_plus_down=0;
+                    r_minus_down=0;
+                    g_minus_down=0;
+                }
+                else if(x>550 && x<600 && y>35 && y<55)
+                {
+                    clear_down=1;
                 }
                 mousedown=1;
             }
             else if(input.type==SDL_MOUSEBUTTONUP)
             {
+                if(clear_down)
+                {
+                    SDL_SetRenderDrawColor(renderer,255,255,255,255);
+                    SDL_RenderClear(renderer);
+                    clear_down=0;
+                }
+                r_plus_down=0;
+                g_plus_down=0;
+                b_plus_down=0;
+                r_minus_down=0;
+                g_minus_down=0;
+                b_minus_down=0;
+                clear_down=0;
                 previous_x=NULL;
                 mousedown=0;
             }
@@ -273,6 +390,54 @@ int main(int argc,char *argv[])
             pen_color.g=rand()%256;
             pen_color.b=rand()%256;
         }
+        if(r_plus_down)
+        {
+            if(pen_color.r==255)
+            {
+                pen_color.r--;
+            }
+            pen_color.r++;
+        }
+        if(g_plus_down)
+        {
+            if(pen_color.g==255)
+            {
+                pen_color.g--;
+            }
+            pen_color.g++;
+        }
+        if(b_plus_down)
+        {
+            if(pen_color.b==255)
+            {
+                pen_color.b--;
+            }
+            pen_color.b++;
+        }
+        if(r_minus_down)
+        {
+            if(pen_color.r==0)
+            {
+                pen_color.r++;
+            }
+            pen_color.r--;
+        }
+        if(g_minus_down)
+        {
+            if(pen_color.g==0)
+            {
+                pen_color.g++;
+            }
+            pen_color.g--;
+        }
+        if(b_minus_down)
+        {
+            if(pen_color.b==0)
+            {
+                pen_color.b++;
+            }
+            pen_color.b--;
+        }
         SDL_RenderCopy(renderer,t_plus,NULL,&rect_r_plus);
         SDL_RenderCopy(renderer,t_plus,NULL,&rect_g_plus);
         SDL_RenderCopy(renderer,t_plus,NULL,&rect_b_plus);
@@ -281,6 +446,7 @@ int main(int argc,char *argv[])
         SDL_RenderCopy(renderer,t_minus,NULL,&rect_b_minus);
         SDL_RenderCopy(renderer,t_random,NULL,&rect_random);
         SDL_RenderPresent(renderer);
+        SDL_Delay(8);
     }
     return 0;
 }
