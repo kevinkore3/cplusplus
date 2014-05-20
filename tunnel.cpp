@@ -5,6 +5,7 @@
 #include <cmath>
 #include <sstream>
 //any 40*40 sprite for the ship should work
+//change SDL_CreateWindow flag to SDL_WINDOW_SHOWN for 800x600 resolution
 #undef main
 using namespace std;
 int main(int *argc,char *argv[])
@@ -27,25 +28,32 @@ int main(int *argc,char *argv[])
     SDL_Init(SDL_INIT_VIDEO);
     TTF_Init();
     TTF_Font *font=TTF_OpenFont("opensans-bold.ttf",100);
-    SDL_Window *window=SDL_CreateWindow("Tunnel",100,100,800,600,SDL_WINDOW_SHOWN);
+    SDL_Window *window=SDL_CreateWindow("Tunnel",100,100,800,600,SDL_WINDOW_FULLSCREEN);
     SDL_Renderer *renderer=SDL_CreateRenderer(window,-1,SDL_RENDERER_ACCELERATED);
     SDL_Surface *s_ship=IMG_Load("spaceship.png");
     SDL_Surface *s_font_1=TTF_RenderText_Solid(font,"PRESS SPACE TO PLAY",white);
     SDL_Surface *s_go=TTF_RenderText_Solid(font,"GO",white);
+    SDL_Surface *s_scoretext=TTF_RenderText_Solid(font,"-SCORE-",white);
+    SDL_Surface *s_quit=TTF_RenderText_Solid(font,"PRESS ESCAPE TO EXIT",white);
     SDL_Surface *s_tunnel;
-    SDL_Surface *s_score;
+    SDL_Surface *s_score=TTF_RenderText_Solid(font,"0",white);
     SDL_SetColorKey(s_ship,SDL_TRUE,SDL_MapRGB(s_ship->format,255,255,255));
     SDL_SetWindowIcon(window,s_ship);
     SDL_Texture *t_font_1=SDL_CreateTextureFromSurface(renderer,s_font_1);
     SDL_Texture *t_tunnel;
     SDL_Texture *t_ship=SDL_CreateTextureFromSurface(renderer,s_ship);
     SDL_Texture *t_go=SDL_CreateTextureFromSurface(renderer,s_go);
-    SDL_Texture *t_score;
+    SDL_Texture *t_score=SDL_CreateTextureFromSurface(renderer,s_score);
+    SDL_Texture *t_scoretext=SDL_CreateTextureFromSurface(renderer,s_scoretext);
+    SDL_Texture *t_quit=SDL_CreateTextureFromSurface(renderer,s_quit);
     SDL_SetTextureAlphaMod(t_go,255);
     SDL_Rect rect_font_1{200,500,400,50};
     SDL_Rect rect_tunnel{300,100,200,70};
     SDL_Rect rect_player{30,300,40,40};
     SDL_Rect rect_go{360,50,80,100};
+    SDL_Rect rect_scoretext{300,200,200,60};
+    SDL_Rect rect_playerscore{350,300,100,40};
+    SDL_Rect rect_quit{200,500,400,50};
     SDL_Rect rect_score[10];
     for(int i=0;i<10;i++)
     {
@@ -97,7 +105,10 @@ int main(int *argc,char *argv[])
             {
                 color_tunnel.b++;
             }
+            SDL_RenderCopy(renderer,t_scoretext,NULL,&rect_scoretext);
+            SDL_RenderCopy(renderer,t_score,NULL,&rect_playerscore);
             s_tunnel=TTF_RenderText_Solid(font,"TUNNEL",color_tunnel);
+            SDL_RenderCopy(renderer,t_quit,NULL,&rect_quit);
             t_tunnel=SDL_CreateTextureFromSurface(renderer,s_tunnel);
             SDL_RenderCopy(renderer,t_font_1,NULL,&rect_font_1);
             SDL_RenderCopy(renderer,t_tunnel,NULL,&rect_tunnel);
@@ -107,9 +118,13 @@ int main(int *argc,char *argv[])
                 {
                     quit=1;
                 }
-                if(input.key.keysym.sym==SDLK_SPACE)
+                else if(input.key.keysym.sym==SDLK_SPACE)
                 {
                     action=play;
+                }
+                else if(input.key.keysym.sym==SDLK_ESCAPE)
+                {
+                    quit=1;
                 }
             }
         }
