@@ -5,7 +5,7 @@
 #include <cmath>
 #include <sstream>
 //any 40*40 sprite for the ship should work
-//change SDL_CreateWindow flag to SDL_WINDOW_SHOWN for 800x600 resolution
+//change SDL_CreateWindow flag to SDL_WINDOW_SHOWN for windowed SVGA
 #undef main
 using namespace std;
 int main(int *argc,char *argv[])
