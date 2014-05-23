@@ -53,7 +53,7 @@ int main(int *argc,char *argv[])
     SDL_Rect rect_go{360,50,80,100};
     SDL_Rect rect_scoretext{300,200,200,60};
     SDL_Rect rect_playerscore{350,300,100,40};
-    SDL_Rect rect_quit{200,500,400,50};
+    SDL_Rect rect_quit{200,550,400,50};
     SDL_Rect rect_score[10];
     for(int i=0;i<10;i++)
     {
